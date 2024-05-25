@@ -1,0 +1,37 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: django-debug
+    volumes:
+      - .:/app
+    ports:
+      - "${DJANGO_PORT}:${DJANGO_PORT}"
+    environment:
+      - DJANGO_PORT
+    command: >
+      sh -c "python3 /app/manage.py makemigrations &&
+             python3 /app/manage.py migrate &&
+             python3 /app/manage.py runserver 0.0.0.0:${DJANGO_PORT}"
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    env_file:
+      - ./.env
+    ports:
+      - "${DB_PORT}:5432"
+
+volumes:
+  postgres_data:
