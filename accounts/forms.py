@@ -6,7 +6,6 @@ from accounts.models import CustomUser
 
 
 class CustomUserCreateForm(UserCreationForm):
-
     first_name = forms.CharField(max_length=50, label="Имя")
     middle_name = forms.CharField(max_length=50, label="Отчество")
     last_name = forms.CharField(max_length=50, label="Фамилия")
@@ -17,12 +16,13 @@ class CustomUserCreateForm(UserCreationForm):
         model = CustomUser
         fields = (
             "username",
+            "last_name",
             "first_name",
             "middle_name",
-            "last_name",
             "email",
             "address",
             "phone_number",
+            "address",
         )
 
 
@@ -31,10 +31,10 @@ class CustomUserAdminEditForm(UserChangeForm):
     class Meta:
         model = CustomUser
         fields = (
+            "last_name",
             "username",
             "first_name",
             "middle_name",
-            "last_name",
             "email",
             "address",
             "phone_number",
@@ -42,23 +42,19 @@ class CustomUserAdminEditForm(UserChangeForm):
 
 
 class UserUpdateForm(ModelForm):
+    first_name = forms.CharField(max_length=50, label="Имя")
+    middle_name = forms.CharField(max_length=50, label="Отчество")
+    last_name = forms.CharField(max_length=50, label="Фамилия")
+    phone_number = forms.CharField(max_length=20, label="Номер телефона")
+    address = forms.CharField(max_length=255, label="Адрес")
 
     class Meta:
         model = CustomUser
         fields = (
-            "first_name",
             "last_name",
+            "first_name",
             "middle_name",
             "email",
             "address",
             "phone_number",
         )
-        labels = {
-            "balance": "Баланс",
-            "first_name": "Имя",
-            "middle_name": "Отчество",
-            "last_name": "Фамилия",
-            "email": "Адрес электронной почты",
-            "address": "Адрес проживания",
-            "phone_number": "Номер телефона",
-        }
