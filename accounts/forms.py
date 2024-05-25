@@ -10,8 +10,8 @@ class CustomUserCreateForm(UserCreationForm):
     first_name = forms.CharField(max_length=50, label="Имя")
     middle_name = forms.CharField(max_length=50, label="Отчество")
     last_name = forms.CharField(max_length=50, label="Фамилия")
-    phone_number =
-    address = forms.CharField(max_length=255, blank=True)
+    phone_number = forms.CharField(max_length=20, label="Номер телефона")
+    address = forms.CharField(max_length=255, label="Адрес")
 
     class Meta:
         model = CustomUser
@@ -22,6 +22,7 @@ class CustomUserCreateForm(UserCreationForm):
             "last_name",
             "email",
             "address",
+            "phone_number",
         )
 
 
@@ -36,6 +37,7 @@ class CustomUserAdminEditForm(UserChangeForm):
             "last_name",
             "email",
             "address",
+            "phone_number",
         )
 
 
@@ -48,8 +50,8 @@ class UserUpdateForm(ModelForm):
             "last_name",
             "middle_name",
             "email",
-            "balance",
             "address",
+            "phone_number",
         )
         labels = {
             "balance": "Баланс",
@@ -58,4 +60,5 @@ class UserUpdateForm(ModelForm):
             "last_name": "Фамилия",
             "email": "Адрес электронной почты",
             "address": "Адрес проживания",
+            "phone_number": "Номер телефона",
         }

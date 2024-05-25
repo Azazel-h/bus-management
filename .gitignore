@@ -241,3 +241,5 @@ fabric.properties
 .idea/
 
 .secret.txt
+db.*
+*/migrations
