@@ -10,7 +10,7 @@ from django.db import models
 
 class CustomUser(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    middle_name = models.CharField(max_length=50, blank=True)
+    middle_name = models.CharField(max_length=50, blank=True, null=True)
     phone_number = models.CharField(max_length=20, unique=True)
     address = models.CharField(max_length=255, blank=True)
 

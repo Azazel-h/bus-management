@@ -7,7 +7,7 @@ from accounts.models import CustomUser
 
 class CustomUserCreateForm(UserCreationForm):
     first_name = forms.CharField(max_length=50, label="Имя")
-    middle_name = forms.CharField(max_length=50, label="Отчество")
+    middle_name = forms.CharField(max_length=50, label="Отчество", required=False)
     last_name = forms.CharField(max_length=50, label="Фамилия")
     phone_number = forms.CharField(max_length=20, label="Номер телефона")
     address = forms.CharField(max_length=255, label="Адрес")

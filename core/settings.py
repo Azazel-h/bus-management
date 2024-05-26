@@ -38,6 +38,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "core.urls"
 AUTH_USER_MODEL = "accounts.CustomUser"
+LOGIN_REDIRECT_URL = "index"
+LOGOUT_REDIRECT_URL = "index"
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
