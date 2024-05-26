@@ -11,7 +11,7 @@ services:
     environment:
       - DJANGO_PORT
     command: >
-      sh -c "python3 /app/manage.py makemigrations &&
+      sh -c "python3 /app/manage.py makemigrations routes_management booking accounts &&
              python3 /app/manage.py migrate &&
              python3 /app/manage.py runserver 0.0.0.0:${DJANGO_PORT}"
     env_file:
@@ -28,7 +28,6 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
     env_file:
       - ./.env
     ports:

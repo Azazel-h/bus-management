@@ -7,5 +7,6 @@ urlpatterns = [
     path("", views.IndexView.as_view(), name="index"),
     path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls")),
+    path("routes/", include("routes_management.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
 ]
