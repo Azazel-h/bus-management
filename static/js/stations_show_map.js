@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     ymaps.ready(init);
 
     function init() {
@@ -58,30 +58,30 @@ document.addEventListener("DOMContentLoaded", function() {
                         longitude: coords[1]
                     })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    var placemark = new ymaps.Placemark([data.latitude, data.longitude], {
-                        balloonContent: data.name
-                    });
-                    map.geoObjects.add(placemark);
+                    .then(response => response.json())
+                    .then(data => {
+                        var placemark = new ymaps.Placemark([data.latitude, data.longitude], {
+                            balloonContent: data.name
+                        });
+                        map.geoObjects.add(placemark);
 
-                    // Добавление возможности удаления метки
-                    placemark.events.add('contextmenu', function (e) {
-                        e.preventDefault();
-                        if (confirm('Вы уверены, что хотите удалить эту станцию?')) {
-                            fetch(`/stations/${data.id}/delete`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'X-CSRFToken': getCookie('csrftoken')
-                                }
-                            }).then(response => {
-                                if (response.ok) {
-                                    map.geoObjects.remove(placemark);
-                                }
-                            });
-                        }
+                        // Добавление возможности удаления метки
+                        placemark.events.add('contextmenu', function (e) {
+                            e.preventDefault();
+                            if (confirm('Вы уверены, что хотите удалить эту станцию?')) {
+                                fetch(`/stations/${data.id}/delete`, {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'X-CSRFToken': getCookie('csrftoken')
+                                    }
+                                }).then(response => {
+                                    if (response.ok) {
+                                        map.geoObjects.remove(placemark);
+                                    }
+                                });
+                            }
+                        });
                     });
-                });
             });
         });
     }

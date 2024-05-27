@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render
 from django.views.generic import DetailView, CreateView, View, TemplateView, ListView
 
 
@@ -11,7 +12,10 @@ class RouteDetailView(LoginRequiredMixin, DetailView):
 
 
 class RouteGenerateView(LoginRequiredMixin, View):
-    pass
+    template_name = "pages/routes/add.html"
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
 
 
 class RouteApproveView(LoginRequiredMixin, CreateView):

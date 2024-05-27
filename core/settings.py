@@ -22,7 +22,7 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
     "booking.apps.BookingConfig",
     "routes_management.apps.RoutesManagementConfig",
-    "stations.apps.StationsConfig"
+    "stations.apps.StationsConfig",
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
