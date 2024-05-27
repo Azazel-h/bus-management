@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 
         // Загрузка существующих станций
-        fetch('/routes/stations/list')
+        fetch('/stations/list')
             .then(response => response.json())
             .then(data => {
                 data.forEach(station => {
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     placemark.events.add('contextmenu', function (e) {
                         e.preventDefault();
                         if (confirm('Вы уверены, что хотите удалить эту станцию?')) {
-                            fetch(`/routes/stations/${station.id}/delete`, {
+                            fetch(`/stations/${station.id}/delete`, {
                                 method: 'DELETE',
                                 headers: {
                                     'X-CSRFToken': getCookie('csrftoken')
@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 var address = firstGeoObject.getAddressLine();
 
                 // Отправка данных на сервер
-                fetch('/routes/stations/create/', {
+                fetch('/stations/create/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     placemark.events.add('contextmenu', function (e) {
                         e.preventDefault();
                         if (confirm('Вы уверены, что хотите удалить эту станцию?')) {
-                            fetch(`/routes/stations/${data.id}/delete`, {
+                            fetch(`/stations/${data.id}/delete`, {
                                 method: 'DELETE',
                                 headers: {
                                     'X-CSRFToken': getCookie('csrftoken')

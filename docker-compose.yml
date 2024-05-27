@@ -11,7 +11,7 @@ services:
     environment:
       - DJANGO_PORT
     command: >
-      sh -c "python3 /app/manage.py makemigrations routes_management booking accounts &&
+      sh -c "python3 /app/manage.py makemigrations routes_management booking accounts stations &&
              python3 /app/manage.py migrate &&
              python3 /app/manage.py runserver 0.0.0.0:${DJANGO_PORT}"
     env_file:

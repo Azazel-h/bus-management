@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 
 
@@ -5,10 +6,5 @@ class Route(models.Model):
     date = models.DateTimeField()
     arrival_time = models.DateTimeField()
     passengers_count = models.IntegerField()
-
-
-class Station(models.Model):
-    name = models.CharField(max_length=100)
-    route = models.ForeignKey(Route, on_delete=models.CASCADE, blank=True, null=True)
-    longitude = models.DecimalField(decimal_places=10, max_digits=20)
-    latitude = models.DecimalField(decimal_places=10, max_digits=20)
+    price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    driver = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=True, null=True)

@@ -3,37 +3,34 @@
 {% load static %}
 
 {% block title %}
-    Главная
+Главная
 {% endblock %}
 
 {% block content %}
-    {% if user.is_authenticated %}
-        <div class="container pt-3 pb-3">
-            <div class="card card-body content grid gap-3">
-                <h2 class="card-title">Главная</h2>
-                <hr>
+{% if user.is_authenticated %}
+<div class="container pt-3 pb-3">
+    <div class="card card-body content grid gap-3">
+        <h2 class="card-title">Главная</h2>
+        <hr>
 
-                {% if user.is_superuser %}
-                    ADMIN - {{ user.username }}
-                    <button type="button" class="btn btn-outline-primary">Сгенерированные маршруты ИС</button>
-                    <button type="button" class="btn btn-outline-primary">Занятость водителей</button>
-                    <button type="button" class="btn btn-outline-primary">Подтвержденные маршруты</button>
-                    <button type="button" class="btn btn-outline-primary">История маршрутов</button>
-                    <button type="button" class="btn btn-outline-primary">Новые заявки</button>
-                    <button type="button" class="btn btn-outline-primary">Архив заявок</button>
-                {% elif user.is_staff %}
-                    DRIVER - {{ user.username }}
-                    <button type="button" class="btn btn-outline-info">Предстоящие рейсы</button>
-                    <button type="button" class="btn btn-outline-info">История рейсов</button>
-                    <button type="button" class="btn btn-outline-info">Трекинг рейса</button>
-                {% else %}
-                    USER - {{ user.username }}
-                    <button type="button" class="btn btn-outline-success">Заказать автобус</button>
-                    <button type="button" class="btn btn-outline-success">История поездок</button>
-                    <button type="button" class="btn btn-outline-success">Стоимость</button>
-                    <button type="button" class="btn btn-outline-success">Документы</button>
-                {% endif %}
-            </div>
-        </div>
-    {% endif %}
+        {% if user.is_superuser %}
+        <a role="button" class="btn btn-outline-primary" href="{% url 'stations' %}">Остановки</a>
+        <button type="button" class="btn btn-outline-primary">Маршруты</button>
+        <button type="button" class="btn btn-outline-primary">Занятость водителей</button>
+        <button type="button" class="btn btn-outline-primary">Подтвержденные маршруты</button>
+        <button type="button" class="btn btn-outline-primary">История маршрутов</button>
+        <button type="button" class="btn btn-outline-primary">Архив заявок</button>
+        {% elif user.is_staff %}
+        <button type="button" class="btn btn-outline-info">Предстоящие рейсы</button>
+        <button type="button" class="btn btn-outline-info">История рейсов</button>
+        <button type="button" class="btn btn-outline-info">Трекинг рейса</button>
+        {% else %}
+        <a role="button" class="btn btn-outline-success" href="{% url 'booking-add' %}">Заказать автобус</a>
+        <a role="button" class="btn btn-outline-success" href="{% url 'user-history' %}">Ваши поездки</a>
+        <button type="button" class="btn btn-outline-success">Стоимость</button>
+        <!--                    <button type="button" class="btn btn-outline-success">Документы</button>-->
+        {% endif %}
+    </div>
+</div>
+{% endif %}
 {% endblock %}
