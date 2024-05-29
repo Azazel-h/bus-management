@@ -20,7 +20,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "accounts.apps.AccountsConfig",
-    "booking.apps.BookingConfig",
+    "applications.apps.ApplicationsConfig",
     "routes_management.apps.RoutesManagementConfig",
     "stations.apps.StationsConfig",
 ]
@@ -97,6 +97,10 @@ LOGGING = {
             "level": "INFO",
         },
         "accounts": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
+        "routes_management": {
             "handlers": ["console"],
             "level": "DEBUG",
         },

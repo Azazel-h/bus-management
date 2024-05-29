@@ -7,7 +7,7 @@ from django.views.generic import CreateView, TemplateView, ListView
 from accounts.forms import CustomUserCreateForm
 import logging
 
-from booking.models import Application
+from applications.models import Application
 
 logger = logging.getLogger("accounts.views")
 

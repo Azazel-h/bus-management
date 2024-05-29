@@ -9,14 +9,14 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView, TemplateView
 
-from booking.forms import ApplicationForm
-from booking.models import Application
+from applications.forms import ApplicationForm
+from applications.models import Application
 
 
 class ApplicationCreateView(LoginRequiredMixin, CreateView):
     model = Application
     form_class = ApplicationForm
-    template_name = "pages/booking/add.html"
+    template_name = "pages/applications/add.html"
     success_url = reverse_lazy("user-history")
 
     def form_valid(self, form):
@@ -34,7 +34,9 @@ class ApplicationListView(View):
             stations.append(
                 {
                     "departure": application.departure.name,
+                    "departure_id": application.departure.id,
                     "arrival": application.arrival.name,
+                    "arrival_id": application.arrival.id,
                 }
             )
         return JsonResponse(stations, safe=False)

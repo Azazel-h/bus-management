@@ -1,7 +1,7 @@
 from django import forms
 from django.utils import timezone
 
-from booking.models import Application
+from applications.models import Application
 
 
 class ApplicationForm(forms.ModelForm):

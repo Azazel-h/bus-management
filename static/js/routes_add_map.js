@@ -10,42 +10,175 @@ document.addEventListener("DOMContentLoaded", function () {
         // Обработчик события нажатия на кнопку создания маршрута
         document.getElementById('create-route-btn').addEventListener('click', function () {
             // Получаем порядок станций из сервера
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "/booking/list/", true);
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    var stations = JSON.parse(xhr.responseText);
+            fetch("/applications/list/")
+                .then(response => response.json())
+                .then(stations => {
                     var waypoints = [];
                     var visited = new Set();
 
                     stations.forEach(function (station) {
-                        if (!visited.has(station.departure)) {
-                            waypoints.push(station.departure);
-                            visited.add(station.departure);
+                        if (!visited.has(station.departure_id)) {
+                            waypoints.push({id: station.departure_id, name: station.departure});
+                            visited.add(station.departure_id);
                         }
-                        if (!visited.has(station.arrival)) {
-                            waypoints.push(station.arrival);
-                            visited.add(station.arrival);
+                        if (!visited.has(station.arrival_id)) {
+                            waypoints.push({id: station.arrival_id, name: station.arrival});
+                            visited.add(station.arrival_id);
                         }
                     });
 
-                    // Создание мультимаршрута
-                    ymaps.route(waypoints, {
-                        multiRoute: true
-                    }).done(function (route) {
-                        route.options.set("mapStateAutoApply", true);
-                        map.geoObjects.add(route);
-                    }, function (err) {
-                        console.log("Error:", err.message);
+                    // Оптимизация порядка точек с использованием метода ветвей и границ
+                    var coords = waypoints.map(function (waypoint) {
+                        return ymaps.geocode(waypoint.name).then(function (res) {
+                            var firstGeoObject = res.geoObjects.get(0);
+                            const metaData = firstGeoObject.properties.get('metaDataProperty');
+                            if (metaData && metaData.GeocoderMetaData && metaData.GeocoderMetaData.Address) {
+                                arrivalTime = metaData.GeocoderMetaData.Address.timestamp;
+                            }
+                            return {
+                                id: waypoint.id,
+                                coordinates: firstGeoObject.geometry.getCoordinates(),
+                            };
+                        });
                     });
-                } else if (xhr.readyState === 4) {
-                    console.log("Error:", xhr.statusText);
-                }
-            };
-            xhr.send();
+
+                    Promise.all(coords).then(function (points) {
+                        var optimalRoute = solveTSPBranchAndBound(points);
+
+                        // Создание маршрута на карте на основе оптимального порядка точек
+                        var routePoints = optimalRoute.map(function (point) {
+                            return point.coordinates;
+                        });
+
+                        ymaps.route(routePoints, {
+                            multiRoute: true,
+                            routingMode: 'driving'
+                        }).then(function (route) {
+                            route.options.set("mapStateAutoApply", true);
+                            map.geoObjects.add(route);
+
+                            // Вывод порядка точек в консоль
+                            console.log("Оптимальный порядок точек для посещения:", optimalRoute.map(p => p.id));
+
+                            // Отправка порядка точек на сервер
+                            var data = optimalRoute.map(function (point) {
+                                return point.id; // Возвращаем ID точек
+                            });
+                            var formData = new FormData(document.querySelector("form"));
+                            var route_data;
+
+                            // Добавление дополнительных параметров
+                            formData.append('waypoints', JSON.stringify(data))
+
+                            route.getRoutes().each(function (route_part) {
+                                console.log('route data:', route_part.properties.getAll());
+                                route_data = route_part.properties.getAll();
+                            });
+
+                            formData.append('route_data', JSON.stringify(route_data));
+                            formData.append('driver', JSON.stringify(document.getElementById("id_driver").value));
+
+                            // Делаем AJAX-запрос
+                            fetch('/routes/', {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRFToken': getCookie('csrftoken')
+                                },
+                                body: formData
+                            })
+                                .then(response => {
+                                    if (response.ok) {
+                                        location.reload();
+                                        console.log('Порядок точек сохранен на сервере.');
+                                    } else {
+                                        console.error('Ошибка при сохранении порядка точек на сервере.');
+                                    }
+                                })
+                                .catch(error => console.error('Ошибка при выполнении запроса:', error));
+                        }, function (err) {
+                            console.log("Error:", err.message);
+                        });
+                    });
+                })
+                .catch(error => console.error('Ошибка при получении данных о станциях:', error));
         });
     }
+
+    // Функция для решения задачи коммивояжера методом ветвей и границ
+    function solveTSPBranchAndBound(points) {
+        var n = points.length;
+        var minPath = [];
+        var minDist = Infinity;
+        var visited = Array(n).fill(false);
+        var path = Array(n).fill(-1);
+        var currentPath = Array(n).fill(-1);
+
+        // Рекурсивная функция для нахождения оптимального маршрута
+        function tsp(currPos, cost, level) {
+            if (level === n && cost < minDist) {
+                minPath = currentPath.slice();
+                minDist = cost;
+                return;
+            }
+
+            for (var i = 0; i < n; i++) {
+                if (!visited[i]) {
+                    visited[i] = true;
+                    currentPath[level] = i;
+                    tsp(i, cost + distanceBetweenPoints(points[currPos].coordinates, points[i].coordinates), level + 1);
+                    visited[i] = false;
+                }
+            }
+        }
+
+        // Находим нижнюю границу для оценки оптимальности маршрута
+        var minBound = 0;
+        for (var i = 0; i < n; i++) {
+            var min1 = Infinity, min2 = Infinity;
+            for (var j = 0; j < n; j++) {
+                if (i !== j) {
+                    var dist = distanceBetweenPoints(points[i].coordinates, points[j].coordinates);
+                    if (dist < min1) {
+                        min2 = min1;
+                        min1 = dist;
+                    } else if (dist < min2 && dist !== min1) {
+                        min2 = dist;
+                    }
+                }
+            }
+            minBound += (min1 + min2);
+        }
+        minBound = Math.ceil(minBound / 2);
+
+        // Начинаем с первой точки
+        visited[0] = true;
+        currentPath[0] = 0;
+
+        // Начинаем поиск оптимального маршрута
+        tsp(0, 0, 1);
+
+        return minPath.map(function (index) {
+            return points[index];
+        });
+    }
+
+    // Вычисление расстояния между двумя точками
+    function distanceBetweenPoints(point1, point2) {
+        return ymaps.coordSystem.geo.getDistance(point1, point2);
+    }
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 });
-
-
