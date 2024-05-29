@@ -17,23 +17,35 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     var stations = JSON.parse(xhr.responseText);
                     var waypoints = [];
+                    var visited = new Set();
+
                     stations.forEach(function (station) {
-                        waypoints.push(station.departure, station.arrival);
+                        if (!visited.has(station.departure)) {
+                            waypoints.push(station.departure);
+                            visited.add(station.departure);
+                        }
+                        if (!visited.has(station.arrival)) {
+                            waypoints.push(station.arrival);
+                            visited.add(station.arrival);
+                        }
                     });
 
-                    ymaps.route({
-                        // Задаем точки маршрута
-                        referencePoints: waypoints,
-                        // Оптимальный маршрут для автомобиля
-                        routingMode: 'auto'
-                    }).then(function (route) {
+                    // Создание мультимаршрута
+                    ymaps.route(waypoints, {
+                        multiRoute: true
+                    }).done(function (route) {
+                        route.options.set("mapStateAutoApply", true);
                         map.geoObjects.add(route);
-                    }, function (error) {
-                        console.log("Error:", error.message);
+                    }, function (err) {
+                        console.log("Error:", err.message);
                     });
+                } else if (xhr.readyState === 4) {
+                    console.log("Error:", xhr.statusText);
                 }
             };
             xhr.send();
         });
     }
 });
+
+

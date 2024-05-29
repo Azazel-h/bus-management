@@ -26,13 +26,15 @@ class ApplicationCreateView(LoginRequiredMixin, CreateView):
 
 class ApplicationListView(View):
     def get(self, request):
-        applications = Application.objects.filter(date__gte=timezone.now())
-        applications_list = []
+        applications = Application.objects.filter(date__gte=timezone.now()).order_by(
+            "date"
+        )
+        stations = []
         for application in applications:
-            applications_list.append(
+            stations.append(
                 {
                     "departure": application.departure.name,
                     "arrival": application.arrival.name,
                 }
             )
-        return JsonResponse(applications_list, safe=False)
+        return JsonResponse(stations, safe=False)
