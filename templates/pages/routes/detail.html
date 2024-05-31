@@ -11,10 +11,10 @@
         <h2 class="card-title">Подробности маршрута</h2>
         <hr>
         <p><strong>Дата:</strong> {{ route.date }}</p>
-        <p><strong>Продолжительность:</strong> {{ route.duration }}</p>
-        <p><strong>Количество пассажиров:</strong> {{ route.passengers_count }}</p>
-        <p><strong>Цена:</strong> {{ route.price }}</p>
         <p><strong>Водитель:</strong> {{ route.driver }}</p>
+        <p><strong>Продолжительность:</strong> {{ route.duration }}</p>
+        <p><strong>Цена:</strong> {{ route.price }}</p>
+        <p><strong>Количество пассажиров:</strong> {{ route.passengers_count }}</p>
         <p><strong>Подтверждено:</strong> {% if route.approved %}Да{% else %}Нет{% endif %}</p>
         <p><strong>Завершено:</strong> {% if route.completed %}Да{% else %}Нет{% endif %}</p>
 

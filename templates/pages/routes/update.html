@@ -28,11 +28,17 @@
                 <tbody>
                 {% for form in formset %}
                 <tr data-order="{{ form.order.value }}">
+                    <!-- Поле ID для идентификации станции -->
                     {{ form.id }}
+                    <!-- Поле порядка с возможностью перетаскивания -->
                     <td class="order-field">{{ form.order | as_crispy_field }}</td>
+                    <!-- Название станции -->
                     <td>{{ form.instance.station.name }}</td>
+                    <!-- Поле для пройдена/не пройдена -->
                     <td>{{ form.passed | as_crispy_field }}</td>
+                    <!-- Поле для количества пассажиров -->
                     <td>{{ form.passengers_taken | as_crispy_field }}</td>
+                    <!-- Поле для времени прохождения -->
                     <td>{% if form.instance.passed %}{{ form.passed_time | as_crispy_field }}{% else %}-{% endif %}</td>
                 </tr>
                 {% endfor %}
@@ -43,35 +49,38 @@
     </div>
 </div>
 
-<!-- Include Sortable.js from CDN -->
+<!-- Подключение библиотеки Sortable.js с CDN -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
 
 <script>
-    // Initialize Sortable
+    // Инициализация Sortable
     const sortable = new Sortable(document.getElementById('station-order-table').getElementsByTagName('tbody')[0], {
         animation: 150,
-        handle: '.order-field',
+        handle: '.order-field', // Элемент для перетаскивания
         onEnd: function (/**Event*/evt) {
-            // Update the order fields after sorting
+            // Обновление порядка после перетаскивания
             const rows = document.querySelectorAll('#station-order-table tbody tr');
             rows.forEach((row, index) => {
+                // Поиск поля порядка
                 const orderField = row.querySelector('.order-field input');
                 if (orderField) {
+                    // Обновление порядкового номера
                     orderField.value = index + 1;
                 }
             });
         }
     });
 
-    // Ensure order fields are updated before form submission
-    document.getElementById('route-form').addEventListener('submit', function () {
+    // Обновление порядковых номеров перед отправкой формы
+    document.getElementById('route-form').addEventListener('submit', function() {
         const rows = document.querySelectorAll('#station-order-table tbody tr');
         rows.forEach((row, index) => {
             const orderField = row.querySelector('.order-field input');
             if (orderField) {
-                orderField.value = index + 1;
+                orderField.value = index + 1; // Обновление порядкового номера
             }
         });
     });
 </script>
 {% endblock %}
+

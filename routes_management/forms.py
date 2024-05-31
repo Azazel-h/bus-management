@@ -29,7 +29,7 @@ class RouteCreateForm(ModelForm):
 
 
 class StationOrderForm(ModelForm):
-    order = IntegerField(required=False, label="")
+    order = IntegerField(required=False, label="", min_value=1)
     passed = BooleanField(required=False, label="")
     passengers_taken = IntegerField(required=False, label="")
     passed_time = TimeField(required=False, label="")
