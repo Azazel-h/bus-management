@@ -88,7 +88,13 @@ class RouteTrackingView(LoginRequiredMixin, View):
         formset = StationOrderFormSet(request.POST, queryset=station_orders)
 
         if formset.is_valid():
-            formset.save()
+            instances = formset.save(commit=False)
+            for instance in instances:
+                if instance.passed and instance.passed_time is None:
+                    instance.passed_time = timezone.now()
+                elif not instance.passed:
+                    instance.passed_time = None
+                instance.save()
             return redirect("route-tracking", pk=pk)
 
         return render(request, self.template_name, {"formset": formset, "route": route})
