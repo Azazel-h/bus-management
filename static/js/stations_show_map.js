@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", function () {
             center: [55.751574, 37.573856],
             zoom: 9
         });
-
         // Загрузка существующих станций
         fetch('/stations/list')
             .then(response => response.json())

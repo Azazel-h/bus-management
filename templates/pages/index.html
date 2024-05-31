@@ -15,15 +15,15 @@
 
         {% if user.is_superuser %}
         <a role="button" class="btn btn-outline-primary" href="{% url 'stations' %}">Остановки</a>
-        <a role="button" class="btn btn-outline-primary" href="{% url 'route-add' %}">Маршруты</a>
+        <a role="button" class="btn btn-outline-primary" href="{% url 'route-menu' %}">Маршруты</a>
+        <a role="button" class="btn btn-outline-primary" href="{% url 'application-archive' %}">Архив заявок</a>
         <button type="button" class="btn btn-outline-primary">Занятость водителей</button>
         <button type="button" class="btn btn-outline-primary">Подтвержденные маршруты</button>
         <button type="button" class="btn btn-outline-primary">История маршрутов</button>
-        <button type="button" class="btn btn-outline-primary">Архив заявок</button>
         {% elif user.is_staff %}
-        <button type="button" class="btn btn-outline-info">Предстоящие рейсы</button>
-        <button type="button" class="btn btn-outline-info">История рейсов</button>
-        <button type="button" class="btn btn-outline-info">Трекинг рейса</button>
+        <a role="button" class="btn btn-outline-primary" href="{% url 'upcoming-routes' %}">Предстоящие рейсы</a>
+        <a role="button" class="btn btn-outline-primary" href="{% url 'driver-routes' %}">Трекинг рейсов</a>
+        <a role="button" class="btn btn-outline-primary" href="{% url 'history-routes' %}">История рейсов</a>
         {% else %}
         <a role="button" class="btn btn-outline-success" href="{% url 'application-add' %}">Заказать автобус</a>
         <a role="button" class="btn btn-outline-success" href="{% url 'user-history' %}">Ваши поездки</a>

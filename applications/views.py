@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import QuerySet
@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import CreateView, TemplateView, ListView
 
 from applications.forms import ApplicationForm
 from applications.models import Application
@@ -40,3 +40,13 @@ class ApplicationListView(View):
                 }
             )
         return JsonResponse(stations, safe=False)
+
+
+class ApplicationArchiveListView(ListView):
+    model = Application
+    template_name = "pages/applications/archive.html"
+    context_object_name = "applications"
+
+    def get_queryset(self, *args: Any, **kwargs: Any) -> List[Application]:
+        applications = Application.objects.filter().order_by("date")
+        return applications

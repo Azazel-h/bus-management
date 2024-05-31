@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_filters %}
+{% block title %}
+{% endblock %}
+
+{% block content %}
+<div class="container pt-3 pb-3">
+    <div class="card card-body content grid gap-3">
+        <h2 class="card-title"></h2>
+        <hr>
+        {% if routes %}
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Дата</th>
+                <th scope="col">Примерная длительность</th>
+                <th scope="col">Цена</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for route in routes %}
+            <tr>
+                <td>{{ route.date }}</td>
+                <td>{{ route.duration }} ч.</td>
+                <td>{{ route.price }}</td>
+                <td>
+                    <a type="button" class="btn btn-success"
+                       href="{% url 'route-tracking' pk=route.pk %}">Отслеживание</a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>У вас сейчас нет назначенных рейсов</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

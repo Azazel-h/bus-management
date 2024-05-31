@@ -4,8 +4,6 @@ import json
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView, View
 
 from stations.models import Station
@@ -13,6 +11,11 @@ from stations.models import Station
 
 class StationsView(TemplateView):
     template_name = "pages/stations/show.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(StationsView, self).get_context_data(**kwargs)
+        context["stations"] = Station.objects.all().order_by("name")
+        return context
 
 
 class StationListView(View):
@@ -31,7 +34,6 @@ class StationListView(View):
 
 
 class StationCreateView(View):
-    @method_decorator(csrf_exempt)
     def post(self, request):
         data = json.loads(request.body)
         station = Station.objects.create(
@@ -48,7 +50,6 @@ class StationCreateView(View):
 
 
 class StationDeleteView(View):
-    @method_decorator(csrf_exempt)
     def delete(self, request, station_id):
         station = get_object_or_404(Station, id=station_id)
         station.delete()

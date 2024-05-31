@@ -17,3 +17,9 @@ class StationOrder(models.Model):
     station = models.ForeignKey(Station, on_delete=models.CASCADE)
     route = models.ForeignKey(Route, on_delete=models.CASCADE)
     order = models.IntegerField()
+    passed = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = [
+            "order",
+        ]

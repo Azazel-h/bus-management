@@ -1,35 +1,31 @@
 import json
 import logging
+import datetime
 from decimal import Decimal, getcontext
+from typing import Any, List
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
-from django.shortcuts import render
+from django.http import JsonResponse, HttpRequest, HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views.generic import DetailView, CreateView, View, TemplateView, ListView
 
-from routes_management.forms import RouteCreateForm
+from routes_management.forms import RouteCreateForm, StationOrderFormSet
 from routes_management.models import Route
-from stations.models import Station
+from stations.models import Station, StationOrder
 
 logger = logging.getLogger("routes_management.views")
 
 
-class RouteListView(LoginRequiredMixin, ListView):
-    pass
-
-
-class RouteDetailView(LoginRequiredMixin, DetailView):
-    pass
-
-
 class RouteGenerateView(LoginRequiredMixin, View):
     form_class = RouteCreateForm
-    template_name = "pages/routes/add.html"
+    template_name = "pages/routes/menu.html"
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name, {"form": self.form_class()})
+        context = {"form": self.form_class()}
+        context["routes"] = Route.objects.all()
+        return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
         logger.debug("RouteGenerateView post")
@@ -41,23 +37,58 @@ class RouteGenerateView(LoginRequiredMixin, View):
         driver = get_user_model().objects.filter(id=driver_id).first()
 
         route = Route.objects.create(
-            date=timezone.now(),
-            arrival_time=timezone.now()
-            + timezone.timedelta(seconds=route_data["duration"]["value"]),
+            date=None,
+            duration=str(datetime.timedelta(seconds=route_data["duration"]["value"])),
             driver=driver,
         )
         route.save()
         for i, station_pk in enumerate(stations, 0):
             station = Station.objects.filter(pk=station_pk).first()
-            # logger.debug(station.name)
             station.route.add(route, through_defaults={"order": i})
             station.save()
         return JsonResponse({"status": "success"})
 
 
-class RouteApproveView(LoginRequiredMixin, CreateView):
+class RouteDetailView(LoginRequiredMixin, DetailView):
+    model = Route
+    template_name = "pages/routes/detail.html"
+
+
+class RouteApproveView(LoginRequiredMixin, View):
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        route: Route = Route.objects.get(pk=self.kwargs["pk"])
+        route.approved = True
+        route.save()
+        return redirect("route-menu")
+
+
+class RouteDeleteView(LoginRequiredMixin, View):
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        route: Route = Route.objects.get(pk=self.kwargs["pk"])
+        route.delete()
+        return redirect("route-menu")
+
+
+class RouteListView(LoginRequiredMixin, ListView):
     pass
 
 
-class RouteHistoryView(LoginRequiredMixin, TemplateView):
-    pass
+class RouteTrackingView(LoginRequiredMixin, View):
+    template_name = "pages/routes/tracking.html"
+
+    def get(self, request, pk):
+        route = get_object_or_404(Route, id=pk)
+        station_orders = StationOrder.objects.filter(route=route).order_by("order")
+        formset = StationOrderFormSet(queryset=station_orders)
+        return render(request, self.template_name, {"formset": formset, "route": route})
+
+    def post(self, request, pk):
+        route = get_object_or_404(Route, id=pk)
+        station_orders = StationOrder.objects.filter(route=route).order_by("order")
+        formset = StationOrderFormSet(request.POST, queryset=station_orders)
+
+        if formset.is_valid():
+            formset.save()
+            return redirect("route-tracking", pk=pk)
+
+        return render(request, self.template_name, {"formset": formset, "route": route})

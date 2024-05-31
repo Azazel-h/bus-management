@@ -3,13 +3,13 @@
 {% load static %}
 
 {% block title %}
-Ваши поездки
+Архив заявок
 {% endblock %}
 
 {% block content %}
 <div class="container pt-3 pb-3">
     <div class="card card-body content grid gap-3">
-        <h2 class="card-title">Ваши поездки</h2>
+        <h2 class="card-title">Архив заявок</h2>
         <hr>
         {% if applications %}
         <div class="container">
@@ -17,6 +17,7 @@
                 <thead>
                 <tr>
                     <th scope="col">Дата и время</th>
+                    <th scope="col">Пользователь</th>
                     <th scope="col">Точка отправления</th>
                     <th scope="col">Точка прибытия</th>
                     <th scope="col">Стоимость</th>
@@ -27,6 +28,7 @@
                 {% for record in applications %}
                 <tr>
                     <td>{{ record.date }}</td>
+                    <td>{{ record.passenger.username }}</td>
                     <td>{{ record.arrival }}</td>
                     <td>{{ record.departure }}</td>
                     {% if record.route is not None %}

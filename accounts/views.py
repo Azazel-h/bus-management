@@ -8,6 +8,7 @@ from accounts.forms import CustomUserCreateForm
 import logging
 
 from applications.models import Application
+from routes_management.models import Route
 
 logger = logging.getLogger("accounts.views")
 
@@ -27,3 +28,38 @@ class UserHistoryView(LoginRequiredMixin, ListView):
     def get_queryset(self, *args: Any, **kwargs: Any) -> QuerySet:
         applications: QuerySet = Application.objects.filter(passenger=self.request.user)
         return applications
+
+
+class CurrentDriverRoutesView(LoginRequiredMixin, ListView):
+    model = Route
+    template_name = "pages/user/driver_tracking.html"
+    context_object_name = "routes"
+
+    def get_queryset(self, *args: Any, **kwargs: Any):
+        current_routes = Route.objects.filter(driver=self.request.user, approved=True)
+        return current_routes
+
+
+class UpcomingDriverRouteListView(LoginRequiredMixin, ListView):
+    model = Route
+    template_name = "pages/user/driver_upcoming.html"
+    context_object_name = "routes"
+
+    def get_queryset(self, *args: Any, **kwargs: Any) -> List[Route]:
+        routes = Route.objects.filter(
+            driver=self.request.user, approved=False, completed=False
+        ).order_by("date")
+        logger.debug(routes)
+        return routes
+
+
+class DriverRouteHistoryView(LoginRequiredMixin, ListView):
+    model = Route
+    template_name = "pages/user/driver_history.html"
+    context_object_name = "routes"
+
+    def get_queryset(self, *args: Any, **kwargs: Any) -> List[Route]:
+        routes = Route.objects.filter(
+            driver=self.request.user, completed=True, approved=True
+        ).order_by("date")
+        return routes
