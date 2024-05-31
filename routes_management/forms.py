@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.forms import ModelForm, BooleanField, modelformset_factory
+from django.forms import ModelForm, BooleanField, modelformset_factory, IntegerField
 
 from routes_management.models import Route
 from stations.models import StationOrder
@@ -24,10 +24,11 @@ class RouteCreateForm(ModelForm):
 
 class StationOrderForm(ModelForm):
     passed = BooleanField(required=False, label="")
+    passengers_taken = IntegerField(required=False, label="")
 
     class Meta:
         model = StationOrder
-        fields = ["passed"]
+        fields = ["passed", "passengers_taken"]
 
 
 StationOrderFormSet = modelformset_factory(StationOrder, form=StationOrderForm, extra=0)

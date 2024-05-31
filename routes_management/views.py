@@ -62,6 +62,14 @@ class RouteApproveView(LoginRequiredMixin, View):
         return redirect("route-menu")
 
 
+class RouteEndView(LoginRequiredMixin, View):
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        route: Route = Route.objects.get(pk=self.kwargs["pk"])
+        route.completed = True
+        route.save()
+        return redirect("route-history")
+
+
 class RouteDeleteView(LoginRequiredMixin, View):
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         route: Route = Route.objects.get(pk=self.kwargs["pk"])
@@ -95,6 +103,4 @@ class RouteTrackingView(LoginRequiredMixin, View):
                 elif not instance.passed:
                     instance.passed_time = None
                 instance.save()
-            return redirect("route-tracking", pk=pk)
-
-        return render(request, self.template_name, {"formset": formset, "route": route})
+        return redirect("route-tracking", pk=pk)

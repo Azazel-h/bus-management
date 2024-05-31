@@ -11,6 +11,7 @@
     <div class="card card-body content grid gap-3">
         <h2 class="card-title">Отслеживание</h2>
         <hr>
+        {% if not route.completed %}
         <form method="post">
             {% csrf_token %}
             {{ formset.management_form | crispy }}
@@ -18,16 +19,21 @@
                 <thead>
                 <tr>
                     <th scope="col">Станция</th>
+                    <th scope="col">Количество человек</th>
                     <th scope="col">Подтвердить</th>
-                    <th scope="col"></th>
+                    <th scope="col">Время подтверждения</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for form in formset %}
                 <tr>
+                    {{ form.id }}
                     <td>{{ form.instance.station.name }}</td>
                     <td>
-                        {{ form | crispy }}
+                        {{ form.passengers_taken | as_crispy_field }}
+                    </td>
+                    <td>
+                        {{ form.passed | as_crispy_field }}
                     </td>
                     <td>
                         {% if form.instance.passed_time %}
@@ -40,6 +46,13 @@
             </table>
             <input type="submit" class="btn btn-success" value="Сохранить">
         </form>
+        <form method="POST" action="{% url 'route-end' pk=route.pk %}">
+            {% csrf_token %}
+            <input type="submit" class="btn btn-success" value="Закончить">
+        </form>
+        {% else %}
+        <p>Маршрут был завершен.</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
