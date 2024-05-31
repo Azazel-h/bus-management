@@ -8,11 +8,19 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse, HttpRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import DetailView, CreateView, View, TemplateView, ListView
+from django.views.generic import (
+    DetailView,
+    CreateView,
+    View,
+    TemplateView,
+    ListView,
+    FormView,
+)
 
 from applications.models import Application
-from routes_management.forms import RouteCreateForm, StationOrderFormSet
+from routes_management.forms import RouteCreateForm, StationOrderFormSet, RouteForm
 from routes_management.models import Route
 from stations.models import Station, StationOrder
 
@@ -50,7 +58,7 @@ class RouteGenerateView(LoginRequiredMixin, View):
             application_obj.route = route
             application_obj.save()
 
-        for i, station_pk in enumerate(stations, 0):
+        for i, station_pk in enumerate(stations, 1):
             station = Station.objects.filter(pk=station_pk).first()
             station.route.add(route, through_defaults={"order": i})
             station.save()
@@ -60,6 +68,57 @@ class RouteGenerateView(LoginRequiredMixin, View):
 class RouteDetailView(LoginRequiredMixin, DetailView):
     model = Route
     template_name = "pages/routes/detail.html"
+
+
+class RouteUpdateView(FormView):
+    template_name = "pages/routes/update.html"
+    form_class = RouteForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        route_id = self.kwargs["pk"]
+        route = get_object_or_404(Route, pk=route_id)
+
+        if self.request.POST:
+            context["form"] = RouteForm(self.request.POST, instance=route)
+            context["formset"] = StationOrderFormSet(
+                self.request.POST, queryset=route.stationorder_set.all()
+            )
+        else:
+            context["form"] = RouteForm(instance=route)
+            context["formset"] = StationOrderFormSet(
+                queryset=route.stationorder_set.all()
+            )
+
+        return context
+
+    def form_valid(self, form):
+        route_id = self.kwargs["pk"]
+        route = get_object_or_404(Route, pk=route_id)
+        logger.debug(form.cleaned_data)
+        route.update(commit=True, **form.cleaned_data)
+
+        station_orders = StationOrder.objects.filter(route=route).order_by("order")
+        formset = StationOrderFormSet(self.request.POST, queryset=station_orders)
+        if formset.is_valid():
+            for form in formset:
+                station_order = form.instance
+                form_data = form.cleaned_data
+                form_data["id"] = station_order.id
+                if form_data["passed"] and form_data["passed_time"] is None:
+                    form_data["passed_time"] = timezone.now()
+                elif not form_data["passed"]:
+                    form_data["passed_time"] = None
+                station_order.update(commit=True, **form_data)
+
+        return super().form_valid(form)
+
+    def get_queryset(self):
+        route_id = self.kwargs["pk"]
+        return StationOrder.objects.filter(pk=route_id)
+
+    def get_success_url(self):
+        return reverse_lazy("route-detail", kwargs={"pk": self.kwargs["pk"]})
 
 
 class RouteApproveView(LoginRequiredMixin, View):

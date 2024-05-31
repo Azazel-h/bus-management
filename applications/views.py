@@ -1,7 +1,8 @@
+import logging
 from typing import Any, List
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -11,6 +12,8 @@ from django.views.generic import CreateView, TemplateView, ListView
 
 from applications.forms import ApplicationForm
 from applications.models import Application
+
+logger = logging.getLogger("routes_management.views")
 
 
 class ApplicationCreateView(LoginRequiredMixin, CreateView):
@@ -27,8 +30,10 @@ class ApplicationCreateView(LoginRequiredMixin, CreateView):
 class ApplicationListView(View):
     def get(self, request):
         applications = Application.objects.filter(
-            date__day=timezone.now().day, departure__route__isnull=True
-        ).order_by("date")
+            date__date=timezone.now().date(),
+            route__isnull=True,
+        )
+        logger.debug(applications)
         stations = []
         for application in applications:
             stations.append(

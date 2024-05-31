@@ -49,12 +49,13 @@
                             <th scope="col">Водитель</th>
                             <th scope="col"></th>
                             <th scope="col"></th>
+                            <th scope="col"></th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for route in routes %}
                         <tr>
-                            <td><a href="{{ route.get_absolute_url }}">{{ route.date }}</a></td>
+                            <td>{{ route.date }}</td>
                             <td>{{ route.duration }} ч.</td>
                             <td>{{ route.price }}</td>
                             <td>{{ route.driver }}</td>
@@ -76,6 +77,9 @@
                                     {% csrf_token %}
                                     <input type="submit" class="btn btn-success" value="Удалить">
                                 </form>
+                            </td>
+                            <td>
+                                <a type="button" class="btn btn-success" href="{{ route.get_absolute_url }}">Подробнее</a>
                             </td>
                         </tr>
                         {% endfor %}

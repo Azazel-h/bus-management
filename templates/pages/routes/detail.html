@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load static %}
-{% load crispy_forms_filters %}
 
 {% block title %}
 Подробности маршрута
@@ -8,20 +7,37 @@
 
 {% block content %}
 <div class="container pt-3 pb-3">
-    <div class="card card-body content grid gap-3">
+    <div class="card card-body content">
         <h2 class="card-title">Подробности маршрута</h2>
         <hr>
-        <div class="row">
-            <div class="col-md-6">
-                <p><strong>Дата:</strong> {{ route.date }}</p>
-                <p><strong>Продолжительность:</strong> {{ route.duration }}</p>
-                <p><strong>Количество пассажиров:</strong> {{ route.passengers_count }}</p>
-                <p><strong>Цена:</strong> {{ route.price }}</p>
-                <p><strong>Водитель:</strong> {{ route.driver }}</p>
-                <p><strong>Подтверждено:</strong> {% if route.approved %}Да{% else %}Нет{% endif %}</p>
-                <p><strong>Завершено:</strong> {% if route.completed %}Да{% else %}Нет{% endif %}</p>
-            </div>
-        </div>
+        <p><strong>Дата:</strong> {{ route.date }}</p>
+        <p><strong>Продолжительность:</strong> {{ route.duration }}</p>
+        <p><strong>Количество пассажиров:</strong> {{ route.passengers_count }}</p>
+        <p><strong>Цена:</strong> {{ route.price }}</p>
+        <p><strong>Водитель:</strong> {{ route.driver }}</p>
+        <p><strong>Подтверждено:</strong> {% if route.approved %}Да{% else %}Нет{% endif %}</p>
+        <p><strong>Завершено:</strong> {% if route.completed %}Да{% else %}Нет{% endif %}</p>
+
+        <h5>Остановки:</h5>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Название</th>
+                <th>Пройдена</th>
+                <th>Когда пройдена</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for station_order in route.stationorder_set.all %}
+            <tr>
+                <td>{{ station_order.station.name }}</td>
+                <td>{{ station_order.passed|yesno:"Да,Нет" }}</td>
+                <td>{% if station_order.passed %}{{ station_order.passed_time }}{% else %}-{% endif %}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <a role="button" class="btn btn-outline-primary" href="{% url 'route-update' pk=route.pk %}">Изменить</a>
     </div>
 </div>
 {% endblock %}

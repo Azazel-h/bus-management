@@ -25,3 +25,10 @@ class StationOrder(models.Model):
         ordering = [
             "order",
         ]
+
+    def update(self, commit=False, **kwargs) -> None:
+        for key, value in kwargs.items():
+            if value:
+                setattr(self, key, value)
+        if commit:
+            self.save()

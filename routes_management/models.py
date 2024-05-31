@@ -16,3 +16,10 @@ class Route(models.Model):
 
     def get_absolute_url(self):
         return reverse("route-detail", kwargs={"pk": self.pk})
+
+    def update(self, commit=False, **kwargs) -> None:
+        for key, value in kwargs.items():
+            if value:
+                setattr(self, key, value)
+        if commit:
+            self.save()
