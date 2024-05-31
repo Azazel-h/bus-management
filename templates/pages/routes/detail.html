@@ -1,15 +1,27 @@
 {% extends "base.html" %}
 {% load static %}
 {% load crispy_forms_filters %}
+
 {% block title %}
+Подробности маршрута
 {% endblock %}
 
 {% block content %}
 <div class="container pt-3 pb-3">
     <div class="card card-body content grid gap-3">
-        <h2 class="card-title"></h2>
+        <h2 class="card-title">Подробности маршрута</h2>
         <hr>
-        {{ route }}
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Дата:</strong> {{ route.date }}</p>
+                <p><strong>Продолжительность:</strong> {{ route.duration }}</p>
+                <p><strong>Количество пассажиров:</strong> {{ route.passengers_count }}</p>
+                <p><strong>Цена:</strong> {{ route.price }}</p>
+                <p><strong>Водитель:</strong> {{ route.driver }}</p>
+                <p><strong>Подтверждено:</strong> {% if route.approved %}Да{% else %}Нет{% endif %}</p>
+                <p><strong>Завершено:</strong> {% if route.completed %}Да{% else %}Нет{% endif %}</p>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

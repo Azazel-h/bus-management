@@ -27,7 +27,7 @@ class ApplicationCreateView(LoginRequiredMixin, CreateView):
 class ApplicationListView(View):
     def get(self, request):
         applications = Application.objects.filter(
-            date__gte=timezone.now(), departure__route__isnull=True
+            date__day=timezone.now().day, departure__route__isnull=True
         ).order_by("date")
         stations = []
         for application in applications:

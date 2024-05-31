@@ -25,7 +25,7 @@ class RouteGenerateView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         context = {"form": self.form_class()}
-        context["routes"] = Route.objects.all()
+        context["routes"] = Route.objects.filter(completed=False)
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
@@ -86,8 +86,14 @@ class RouteDeleteView(LoginRequiredMixin, View):
         return redirect("route-menu")
 
 
-class RouteListView(LoginRequiredMixin, ListView):
-    pass
+class RouteHistoryView(LoginRequiredMixin, ListView):
+    model = Route
+    template_name = "pages/routes/history.html"
+    context_object_name = "routes"
+
+    def get_queryset(self, *args: Any, **kwargs: Any) -> List[Route]:
+        routes = Route.objects.filter(completed=True, approved=True).order_by("date")
+        return routes
 
 
 class RouteTrackingView(LoginRequiredMixin, View):

@@ -26,7 +26,9 @@ class UserHistoryView(LoginRequiredMixin, ListView):
     context_object_name = "applications"
 
     def get_queryset(self, *args: Any, **kwargs: Any) -> QuerySet:
-        applications: QuerySet = Application.objects.filter(passenger=self.request.user)
+        applications: QuerySet = Application.objects.filter(
+            passenger=self.request.user
+        ).order_by("-date")
         return applications
 
 
