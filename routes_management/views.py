@@ -43,6 +43,16 @@ class RouteGenerateView(LoginRequiredMixin, View):
         route_data = json.loads(request.POST["route_data"])
         applications = json.loads(request.POST["applications"])
         logger.debug(applications)
+        application_ids = [app["id"] for app in applications]
+
+        # Получение количества уникальных пассажиров
+        unique_passenger_count = (
+            Application.objects.filter(id__in=application_ids)
+            .values("passenger")
+            .distinct()
+            .count()
+        )
+        logger.debug(unique_passenger_count)
         driver_id = json.loads(request.POST["driver"])
         logger.debug(driver_id)
         driver = get_user_model().objects.filter(id=driver_id).first()
@@ -51,6 +61,10 @@ class RouteGenerateView(LoginRequiredMixin, View):
             date=None,
             duration=str(datetime.timedelta(seconds=route_data["duration"]["value"])),
             driver=driver,
+            passengers_count=unique_passenger_count,
+            price=(route_data["distance"]["value"] / 1000 * 100)
+            / unique_passenger_count,
+            distance=route_data["distance"]["value"],
         )
         route.save()
         for application in applications:

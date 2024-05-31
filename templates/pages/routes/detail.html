@@ -13,7 +13,7 @@
         <p><strong>Дата:</strong> {{ route.date }}</p>
         <p><strong>Водитель:</strong> {{ route.driver }}</p>
         <p><strong>Продолжительность:</strong> {{ route.duration }}</p>
-        <p><strong>Цена:</strong> {{ route.price }}</p>
+        <p><strong>Стоимость:</strong> {{ route.price }}</p>
         <p><strong>Количество пассажиров:</strong> {{ route.passengers_count }}</p>
         <p><strong>Подтверждено:</strong> {% if route.approved %}Да{% else %}Нет{% endif %}</p>
         <p><strong>Завершено:</strong> {% if route.completed %}Да{% else %}Нет{% endif %}</p>
@@ -37,7 +37,9 @@
             {% endfor %}
             </tbody>
         </table>
+        {% if user.is_superuser %}
         <a role="button" class="btn btn-outline-primary" href="{% url 'route-update' pk=route.pk %}">Изменить</a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

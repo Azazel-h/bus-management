@@ -28,7 +28,7 @@ class UserHistoryView(LoginRequiredMixin, ListView):
     def get_queryset(self, *args: Any, **kwargs: Any) -> QuerySet:
         applications: QuerySet = Application.objects.filter(
             passenger=self.request.user
-        ).order_by("-date")
+        ).order_by("date")
         return applications
 
 
@@ -38,7 +38,9 @@ class CurrentDriverRoutesView(LoginRequiredMixin, ListView):
     context_object_name = "routes"
 
     def get_queryset(self, *args: Any, **kwargs: Any):
-        current_routes = Route.objects.filter(driver=self.request.user, approved=True)
+        current_routes = Route.objects.filter(
+            driver=self.request.user, approved=True
+        ).order_by("-date")
         return current_routes
 
 
@@ -50,7 +52,7 @@ class UpcomingDriverRouteListView(LoginRequiredMixin, ListView):
     def get_queryset(self, *args: Any, **kwargs: Any) -> List[Route]:
         routes = Route.objects.filter(
             driver=self.request.user, approved=False, completed=False
-        ).order_by("date")
+        ).order_by("-date")
         logger.debug(routes)
         return routes
 
@@ -63,5 +65,5 @@ class DriverRouteHistoryView(LoginRequiredMixin, ListView):
     def get_queryset(self, *args: Any, **kwargs: Any) -> List[Route]:
         routes = Route.objects.filter(
             driver=self.request.user, completed=True, approved=True
-        ).order_by("date")
+        ).order_by("-date")
         return routes

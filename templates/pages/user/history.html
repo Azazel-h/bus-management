@@ -21,6 +21,7 @@
                     <th scope="col">Точка прибытия</th>
                     <th scope="col">Стоимость</th>
                     <th scope="col">Водитель</th>
+                    <th scope="col"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -37,8 +38,14 @@
                         {{ record.route.driver.last_name }} {{ record.route.driver.first_name }}
                     </td>
                     {% else %}
-                    <td colspan="2">
+                    <td colspan="3">
                         Маршрут на подтверждении
+                    </td>
+                    {% endif %}
+                    {% if record.route.approved %}
+                    <td>
+                        <a type="button" class="btn btn-success"
+                           href="{% url 'route-detail' pk=record.route.id %}">Подробнее</a>
                     </td>
                     {% endif %}
                 </tr>
