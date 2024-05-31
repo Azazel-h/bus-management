@@ -33,6 +33,7 @@ class ApplicationListView(View):
         for application in applications:
             stations.append(
                 {
+                    "id": application.id,
                     "departure": application.departure.name,
                     "departure_id": application.departure.id,
                     "arrival": application.arrival.name,

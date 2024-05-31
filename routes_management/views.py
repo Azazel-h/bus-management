@@ -11,6 +11,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views.generic import DetailView, CreateView, View, TemplateView, ListView
 
+from applications.models import Application
 from routes_management.forms import RouteCreateForm, StationOrderFormSet
 from routes_management.models import Route
 from stations.models import Station, StationOrder
@@ -28,10 +29,12 @@ class RouteGenerateView(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        logger.debug("RouteGenerateView post")
+        logger.debug(request.POST)
 
         stations = json.loads(request.POST["waypoints"])
         route_data = json.loads(request.POST["route_data"])
+        applications = json.loads(request.POST["applications"])
+        logger.debug(applications)
         driver_id = json.loads(request.POST["driver"])
         logger.debug(driver_id)
         driver = get_user_model().objects.filter(id=driver_id).first()
@@ -42,6 +45,11 @@ class RouteGenerateView(LoginRequiredMixin, View):
             driver=driver,
         )
         route.save()
+        for application in applications:
+            application_obj = Application.objects.filter(pk=application["id"]).first()
+            application_obj.route = route
+            application_obj.save()
+
         for i, station_pk in enumerate(stations, 0):
             station = Station.objects.filter(pk=station_pk).first()
             station.route.add(route, through_defaults={"order": i})
@@ -67,6 +75,7 @@ class RouteEndView(LoginRequiredMixin, View):
         route: Route = Route.objects.get(pk=self.kwargs["pk"])
         route.completed = True
         route.save()
+
         return redirect("route-history")
 
 

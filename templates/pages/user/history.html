@@ -29,7 +29,7 @@
                     <td>{{ record.date }}</td>
                     <td>{{ record.arrival }}</td>
                     <td>{{ record.departure }}</td>
-                    {% if record.route is not None %}
+                    {% if record.route.approved %}
                     <td>
                         {{ record.route.price }}
                     </td>

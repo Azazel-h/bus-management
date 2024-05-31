@@ -67,6 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 window.routeData = {
                                     waypoints: data,
                                     route_data: route_data,
+                                    user_applications: stations,
                                 };
 
                                 // Вывод порядка точек в консоль
@@ -95,6 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Добавление дополнительных параметров из сохраненной глобальной переменной
                 formData.append('waypoints', JSON.stringify(window.routeData.waypoints));
                 formData.append('route_data', JSON.stringify(window.routeData.route_data));
+                formData.append('applications', JSON.stringify(window.routeData.user_applications));
                 formData.append('driver', JSON.stringify(document.getElementById("id_driver").value));
                 console.log(formData.get("waypoints"))
                 fetch('/routes/', {
