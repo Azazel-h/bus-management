@@ -7,10 +7,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 zoom: 9
             });
 
+            var currentRoute;
+
             // Функция для создания предпросмотра маршрута
-            function createRoutePreview() {
+            function createRoutePreview(date) {
+                if (currentRoute) {
+                    map.geoObjects.remove(currentRoute);
+                }
                 // Получаем порядок станций из сервера
-                fetch("/applications/list/")
+                fetch(`/applications/list/?date=${date}`)
                     .then(response => response.json())
                     .then(stations => {
                         var waypoints = [];
@@ -52,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             }).then(function (route) {
                                 route.options.set("mapStateAutoApply", true);
                                 map.geoObjects.add(route);
-
+                                currentRoute = route;
                                 var data = optimalRoute.map(function (point) {
                                     return point.id; // Возвращаем ID точек
                                 });
@@ -81,7 +86,10 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             // Вызываем функцию для создания предпросмотра маршрута при загрузке страницы
-            createRoutePreview();
+            document.querySelector("#id_date").addEventListener("change", function () {
+                var selectedDate = this.value;
+                createRoutePreview(selectedDate);
+            });
 
             // Обработчик события нажатия на кнопку создания маршрута
             document.getElementById('create-route-btn').addEventListener('click', function () {
@@ -98,6 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 formData.append('route_data', JSON.stringify(window.routeData.route_data));
                 formData.append('applications', JSON.stringify(window.routeData.user_applications));
                 formData.append('driver', JSON.stringify(document.getElementById("id_driver").value));
+                formData.append('date', document.getElementById("id_date").value);
                 console.log(formData.get("waypoints"))
                 fetch('/routes/', {
                     method: 'POST',

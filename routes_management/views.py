@@ -42,7 +42,14 @@ class RouteGenerateView(LoginRequiredMixin, View):
         stations = json.loads(request.POST["waypoints"])
         route_data = json.loads(request.POST["route_data"])
         applications = json.loads(request.POST["applications"])
+        date_str = request.POST["date"]
         logger.debug(applications)
+        try:
+            # Парсим дату в формате 'YYYY-MM-DD'
+            date = timezone.datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError as e:
+            logger.error(f"Invalid date format: {e}")
+            return JsonResponse({"error": "Invalid date format"}, status=400)
         application_ids = [app["id"] for app in applications]
 
         # Получение количества уникальных пассажиров
@@ -58,7 +65,7 @@ class RouteGenerateView(LoginRequiredMixin, View):
         driver = get_user_model().objects.filter(id=driver_id).first()
 
         route = Route.objects.create(
-            date=None,
+            date=date,
             duration=str(datetime.timedelta(seconds=route_data["duration"]["value"])),
             driver=driver,
             passengers_count=unique_passenger_count,

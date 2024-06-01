@@ -29,8 +29,17 @@ class ApplicationCreateView(LoginRequiredMixin, CreateView):
 
 class ApplicationListView(View):
     def get(self, request):
+        date_str = request.GET.get("date", None)
+        if date_str:
+            try:
+                selected_date = timezone.datetime.strptime(date_str, "%Y-%m-%d").date()
+            except ValueError:
+                return JsonResponse({"error": "Invalid date format"}, status=400)
+        else:
+            selected_date = timezone.now().date()
+
         applications = Application.objects.filter(
-            date__date=timezone.now().date(),
+            date__date=selected_date,
             route__isnull=True,
         )
         logger.debug(applications)

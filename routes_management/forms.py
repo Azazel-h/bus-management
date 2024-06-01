@@ -5,6 +5,9 @@ from django.forms import (
     modelformset_factory,
     IntegerField,
     TimeField,
+    DateField,
+    SelectDateWidget,
+    DateInput,
 )
 
 from routes_management.models import Route
@@ -12,9 +15,7 @@ from stations.models import StationOrder
 
 
 class RouteCreateForm(ModelForm):
-    """
-    Форма для создания парковки.
-    """
+    date = DateField(widget=DateInput(attrs={"type": "date"}), label="Дата")
 
     class Meta:
         model = Route

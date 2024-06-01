@@ -4,7 +4,7 @@ from django.urls import reverse
 
 
 class Route(models.Model):
-    date = models.DateTimeField(auto_now=True, blank=True, null=True)
+    date = models.DateField(blank=True, null=True)
     duration = models.TimeField()
     distance = models.FloatField()
     passengers_count = models.IntegerField(blank=True, null=True)
