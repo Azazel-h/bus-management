@@ -38,7 +38,7 @@ class CurrentDriverRoutesView(LoginRequiredMixin, ListView):
 
     def get_queryset(self, *args: Any, **kwargs: Any):
         current_routes = Route.objects.filter(
-            driver=self.request.user, approved=True
+            driver=self.request.user, approved=True, completed=False
         ).order_by("-date")
         return current_routes
 

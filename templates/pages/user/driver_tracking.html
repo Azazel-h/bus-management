@@ -15,7 +15,8 @@
             <thead>
             <tr>
                 <th scope="col">Дата</th>
-                <th scope="col">Примерная длительность</th>
+                <th scope="col">Дистанция</th>
+                <th scope="col">Продолжительность</th>
                 <th scope="col">Стоимость</th>
                 <th scope="col"></th>
                 <th scope="col"></th>
@@ -25,6 +26,7 @@
             {% for route in routes %}
             <tr>
                 <td>{{ route.date }}</td>
+                <td>~ {{ route.distance_kilometers }} км.</td>
                 <td>{{ route.duration }} ч.</td>
                 <td>{{ route.price }}</td>
                 <td>

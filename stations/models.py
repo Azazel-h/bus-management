@@ -5,7 +5,7 @@ from routes_management.models import Route
 
 class Station(models.Model):
     name = models.CharField(max_length=100)
-    route = models.ManyToManyField(Route, blank=True, null=True, through="StationOrder")
+    route = models.ManyToManyField(Route, blank=True, through="StationOrder")
     longitude = models.DecimalField(decimal_places=10, max_digits=20)
     latitude = models.DecimalField(decimal_places=10, max_digits=20)
 
