@@ -6,6 +6,7 @@ from typing import Any, List
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.gis.measure import Distance
 from django.http import JsonResponse, HttpRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
@@ -43,6 +44,7 @@ class RouteGenerateView(LoginRequiredMixin, View):
         route_data = json.loads(request.POST["route_data"])
         applications = json.loads(request.POST["applications"])
         date_str = request.POST["date"]
+        part_of_day = request.POST["part_of_day"]  # Добавляем время дня
         logger.debug(applications)
         try:
             # Парсим дату в формате 'YYYY-MM-DD'
@@ -72,6 +74,7 @@ class RouteGenerateView(LoginRequiredMixin, View):
             price=(route_data["distance"]["value"] / 1000 * 25)
             / unique_passenger_count,
             distance=route_data["distance"]["value"],
+            part_of_day=part_of_day,
         )
         route.save()
         for application in applications:

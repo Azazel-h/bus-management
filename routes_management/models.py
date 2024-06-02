@@ -33,6 +33,9 @@ class Route(models.Model):
     def get_absolute_url(self):
         return reverse("route-detail", kwargs={"pk": self.pk})
 
+    def distance_kilometers(self):
+        return round(self.distance / 1000, 2)
+
     def update(self, commit=False, **kwargs) -> None:
         for key, value in kwargs.items():
             if value:

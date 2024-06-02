@@ -32,6 +32,6 @@ class ApplicationForm(forms.ModelForm):
 
         if date:
             min_date = timezone.now() + timezone.timedelta(hours=1)
-            if date < min_date.date:
+            if date < min_date.date():
                 raise forms.ValidationError("Не раньше, чем через час от текущего.")
         return cleaned_data

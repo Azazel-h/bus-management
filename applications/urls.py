@@ -10,4 +10,9 @@ urlpatterns = [
         views.ApplicationArchiveListView.as_view(),
         name="application-archive",
     ),
+    path(
+        "<int:pk>/delete/",
+        views.ApplicationDeleteView.as_view(),
+        name="application-delete",
+    ),
 ]

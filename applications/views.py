@@ -3,7 +3,7 @@ from typing import Any, List
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import QuerySet, Q
-from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
+from django.http import HttpRequest, HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -30,6 +30,8 @@ class ApplicationCreateView(LoginRequiredMixin, CreateView):
 class ApplicationListView(View):
     def get(self, request):
         date_str = request.GET.get("date", None)
+        part_of_day = request.GET.get("part_of_day", None)
+
         if date_str:
             try:
                 selected_date = timezone.datetime.strptime(date_str, "%Y-%m-%d").date()
@@ -38,10 +40,11 @@ class ApplicationListView(View):
         else:
             selected_date = timezone.now().date()
 
+        logger.debug(part_of_day)
         applications = Application.objects.filter(
-            date__date=selected_date,
-            route__isnull=True,
+            date=selected_date, route__isnull=True, part_of_day=part_of_day
         )
+
         logger.debug(applications)
         stations = []
         for application in applications:
@@ -65,3 +68,13 @@ class ApplicationArchiveListView(ListView):
     def get_queryset(self, *args: Any, **kwargs: Any) -> List[Application]:
         applications = Application.objects.filter().order_by("date")
         return applications
+
+
+class ApplicationDeleteView(LoginRequiredMixin, View):
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        application: Application = Application.objects.get(pk=self.kwargs["pk"])
+        application.delete()
+
+        if self.request.user.is_superuser:
+            return redirect("application-archive")
+        return redirect("user-history")

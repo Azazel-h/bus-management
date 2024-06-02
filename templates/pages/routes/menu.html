@@ -44,7 +44,9 @@
                         <thead>
                         <tr>
                             <th scope="col">Дата</th>
-                            <th scope="col">Примерная длительность</th>
+                            <th scope="col">Время</th>
+                            <th scope="col">Дистанция</th>
+                            <th scope="col">Продолжительность</th>
                             <th scope="col">Стоимость</th>
                             <th scope="col">Водитель</th>
                             <th scope="col"></th>
@@ -56,7 +58,9 @@
                         {% for route in routes %}
                         <tr>
                             <td>{{ route.date }}</td>
-                            <td>{{ route.duration }} ч.</td>
+                            <td>{{ route.get_part_of_day_display }}</td>
+                            <td>~ {{ route.distance_kilometers }} км.</td>
+                            <td>~ {{ route.duration }} ч.</td>
                             <td>{{ route.price }}</td>
                             <td>{{ route.driver }}</td>
                             <td>
@@ -75,7 +79,7 @@
                             <td>
                                 <form method="POST" action="{% url 'route-delete' pk=route.pk %}">
                                     {% csrf_token %}
-                                    <input type="submit" class="btn btn-success" value="Удалить">
+                                    <input type="submit" class="btn btn-danger" value="Удалить">
                                 </form>
                             </td>
                             <td>

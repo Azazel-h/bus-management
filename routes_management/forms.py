@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth import get_user_model
 from django.forms import (
     ModelForm,
@@ -8,19 +10,25 @@ from django.forms import (
     DateField,
     SelectDateWidget,
     DateInput,
+    ChoiceField,
 )
+from django.utils import timezone
 
 from routes_management.models import Route
 from stations.models import StationOrder
 
 
 class RouteCreateForm(ModelForm):
-    date = DateField(widget=DateInput(attrs={"type": "date"}), label="Дата")
+    date = DateField(
+        widget=DateInput(attrs={"type": "date"}),
+        label="Дата",
+    )
+    part_of_day = ChoiceField(choices=Route.PART_OF_DAY_CHOICES, label="Время дня")
 
     class Meta:
         model = Route
-        fields = ("driver",)
-        labels = {"driver": "Водитель"}
+        fields = ("driver", "date", "part_of_day")
+        labels = {"driver": "Водитель", "date": "Дата", "part_of_day": "Время дня"}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -48,6 +56,7 @@ class RouteForm(ModelForm):
         model = Route
         fields = [
             "driver",
+            "distance",
             "duration",
             "passengers_count",
             "price",
@@ -56,6 +65,7 @@ class RouteForm(ModelForm):
         ]
         labels = {
             "driver": "Водитель",
+            "distance": "Дистанция",
             "duration": "Продолжительность",
             "passengers_count": "Количество пассажиров",
             "price": "Цена",
@@ -70,3 +80,4 @@ class RouteForm(ModelForm):
             is_staff=True, is_superuser=False
         )
         self.fields["duration"].required = False
+        self.fields["distance"].required = False
