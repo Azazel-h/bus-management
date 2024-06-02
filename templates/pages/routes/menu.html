@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block head %}
+<script src="https://api-maps.yandex.ru/2.1/?apikey=8c3ac43b-20c9-4f37-ab63-16793788c4c7&suggest_apikey=0304e61b-14a9-4e67-bb7d-da4085110654&lang=ru_RU&coordorder=latlong"
+        type="text/javascript"></script>
+{% endblock %}
+{% load static %}
+{% load crispy_forms_filters %}
+{% block title %}
+Маршруты
+{% endblock %}
+
+{% block content %}
+<style>
+    #map {
+        height: 50vh; /* Adjust the height as needed */
+        width: 100%;
+    }
+
+    .content {
+        overflow-y: auto;
+        max-height: 50vh; /* Adjust based on the desired table height */
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div id="map"></div>
+        </div>
+        <div class="col-12 pt-3 pb-3">
+            <div class="card card-body content grid gap-3">
+                <h2 class="card-title">Маршруты</h2>
+                <form id="route-form" method="POST">
+                    {% csrf_token %}
+                    {{ form | crispy }}
+                    <button type="button" id="create-route-btn" class="btn btn-success">
+                        Создать
+                        маршрут
+                    </button>
+                </form>
+                {% if routes %}
+                <div class="container">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">Дата</th>
+                            <th scope="col">Время</th>
+                            <th scope="col">Дистанция</th>
+                            <th scope="col">Продолжительность</th>
+                            <th scope="col">Стоимость</th>
+                            <th scope="col">Водитель</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for route in routes %}
+                        <tr>
+                            <td>{{ route.date }}</td>
+                            <td>{{ route.get_part_of_day_display }}</td>
+                            <td>~ {{ route.distance_kilometers }} км.</td>
+                            <td>~ {{ route.duration }} ч.</td>
+                            <td>{{ route.price }}</td>
+                            <td>{{ route.driver }}</td>
+                            <td>
+                                {% if not route.approved %}
+                                <form method="POST" action="{% url 'route-approve' pk=route.pk %}">
+                                    {% csrf_token %}
+                                    <input type="submit" class="btn btn-success" value="Подтвердить">
+                                </form>
+                                {% else %}
+                                <form method="POST" action="{% url 'route-approve' pk=route.pk %}">
+                                    {% csrf_token %}
+                                    <input type="submit" class="btn btn-success disabled" value="Подтвердить">
+                                </form>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form method="POST" action="{% url 'route-delete' pk=route.pk %}">
+                                    {% csrf_token %}
+                                    <input type="submit" class="btn btn-danger" value="Удалить">
+                                </form>
+                            </td>
+                            <td>
+                                <a type="button" class="btn btn-success"
+                                   href="{{ route.get_absolute_url }}">Подробнее</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p>Вы пока не создали ни одного маршрута.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/routes_add_map.js' %}" type="text/javascript"></script>
+<script>
+    function resizeMap() {
+        var mapElement = document.getElementById('map');
+        mapElement.style.height = (window.innerHeight * 0.5) + 'px'; // Adjust the height ratio as needed
+    }
+
+    window.addEventListener('resize', resizeMap);
+    window.addEventListener('load', resizeMap);
+</script>
+{% endblock %}

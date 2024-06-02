@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+Ваши поездки
+{% endblock %}
+
+{% block content %}
+<div class="container pt-3 pb-3">
+    <div class="card card-body content grid gap-3">
+        <h2 class="card-title">Ваши поездки</h2>
+        <hr>
+        {% if applications %}
+        <div class="container">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Дата</th>
+                    <th scope="col">Время</th>
+                    <th scope="col">Точка отправления</th>
+                    <th scope="col">Точка прибытия</th>
+                    <th scope="col">Стоимость</th>
+                    <th scope="col">Водитель</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for record in applications %}
+                <tr>
+                    <td>{{ record.date }}</td>
+                    <td>{{ record.get_part_of_day_display }}</td>
+                    <td>{{ record.departure }}</td>
+                    <td>{{ record.arrival }}</td>
+                    {% if record.route.approved %}
+                    <td>
+                        {{ record.route.price }}
+                    </td>
+                    <td>
+                        {{ record.route.driver.last_name }} {{ record.route.driver.first_name }}
+                    </td>
+                    {% else %}
+                    <td colspan="2">
+                        Маршрут на подтверждении
+                    </td>
+                    <td>
+                        <form method="POST" action="{% url 'application-delete' pk=record.pk %}">
+                            {% csrf_token %}
+                            <input type="submit" class="btn btn-danger" value="Удалить">
+                        </form>
+                    </td>
+                    {% endif %}
+                    {% if record.route.approved %}
+                    <td>
+                        <a type="button" class="btn btn-success"
+                           href="{% url 'route-detail' pk=record.route.id %}">Подробнее</a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p>Вы пока не создали ни одной заявки.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

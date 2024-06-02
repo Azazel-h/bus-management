@@ -3,8 +3,30 @@
 {% load static %}
 
 {% block title %}
-    Главная
+Главная
 {% endblock %}
 
 {% block content %}
+{% if user.is_authenticated %}
+<div class="container pt-3 pb-3">
+    <div class="card card-body content grid gap-3">
+        <h2 class="card-title">Главная</h2>
+        <hr>
+
+        {% if user.is_superuser %}
+        <a role="button" class="btn btn-outline-primary" href="{% url 'stations' %}">Остановки</a>
+        <a role="button" class="btn btn-outline-primary" href="{% url 'route-menu' %}">Маршруты</a>
+        <a role="button" class="btn btn-outline-primary" href="{% url 'application-archive' %}">Архив заявок</a>
+        <a role="button" class="btn btn-outline-primary" href="{% url 'route-history' %}">История маршрутов</a>
+        {% elif user.is_staff %}
+        <a role="button" class="btn btn-outline-primary" href="{% url 'upcoming-routes' %}">Предстоящие рейсы</a>
+        <a role="button" class="btn btn-outline-primary" href="{% url 'driver-routes' %}">Трекинг рейсов</a>
+        <a role="button" class="btn btn-outline-primary" href="{% url 'history-routes' %}">История рейсов</a>
+        {% else %}
+        <a role="button" class="btn btn-outline-success" href="{% url 'application-add' %}">Заказать автобус</a>
+        <a role="button" class="btn btn-outline-success" href="{% url 'user-history' %}">Ваши поездки</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
 {% endblock %}

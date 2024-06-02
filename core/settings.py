@@ -17,9 +17,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "accounts.apps.AccountsConfig",
     "crispy_forms",
     "crispy_bootstrap5",
+    "phonenumber_field",
+    "accounts.apps.AccountsConfig",
+    "applications.apps.ApplicationsConfig",
+    "routes_management.apps.RoutesManagementConfig",
+    "stations.apps.StationsConfig",
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -38,6 +42,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "core.urls"
 AUTH_USER_MODEL = "accounts.CustomUser"
+LOGIN_REDIRECT_URL = "index"
+LOGOUT_REDIRECT_URL = "index"
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -60,12 +67,12 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
+        "ENGINE": os.environ.get("DB_ENGINE", "django.db.backends.sqlite3"),
         "NAME": os.environ.get("DB_NAME", BASE_DIR / "db.sqlite3"),
         "USER": os.environ.get("DB_USER", "user"),
         "PASSWORD": os.environ.get("DB_PASSWORD", "password"),
-        "HOST": os.environ.get("SQL_HOST", "localhost"),
-        "PORT": os.environ.get("SQL_PORT", "5432"),
+        "HOST": os.environ.get("DB_HOST", "localhost"),
+        "PORT": os.environ.get("DB_PORT", "5432"),
     }
 }
 
@@ -91,6 +98,10 @@ LOGGING = {
             "level": "INFO",
         },
         "accounts": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
+        "routes_management": {
             "handlers": ["console"],
             "level": "DEBUG",
         },

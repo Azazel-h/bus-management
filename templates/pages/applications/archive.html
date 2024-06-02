@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+Архив заявок
+{% endblock %}
+
+{% block content %}
+<div class="container pt-3 pb-3">
+    <div class="card card-body content grid gap-3">
+        <h2 class="card-title">Архив заявок</h2>
+        <hr>
+        {% if applications %}
+        <div class="container">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Дата</th>
+                    <th scope="col">Время</th>
+                    <th scope="col">Пользователь</th>
+                    <th scope="col">Точка отправления</th>
+                    <th scope="col">Точка прибытия</th>
+                    <th scope="col">Стоимость</th>
+                    <th scope="col">Водитель</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for record in applications %}
+                <tr>
+                    <td>{{ record.date }}</td>
+                    <td>{{ record.get_part_of_day_display }}</td>
+                    <td>{{ record.passenger.username }}</td>
+                    <td>{{ record.arrival }}</td>
+                    <td>{{ record.departure }}</td>
+                    {% if record.route is not None %}
+                    <td>
+                        {{ record.route.price }}
+                    </td>
+                    <td>
+                        {{ record.route.driver.last_name }} {{ record.route.driver.first_name }}
+                    </td>
+                    {% else %}
+                    <td>
+                        Маршрут на подтверждении
+                    </td>
+                    <td>
+                        <form method="POST" action="{% url 'application-delete' pk=record.pk %}">
+                            {% csrf_token %}
+                            <input type="submit" class="btn btn-danger" value="Удалить">
+                        </form>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p>Вы пока не создали ни одной заявки.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

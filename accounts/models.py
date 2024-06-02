@@ -6,13 +6,13 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class CustomUser(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    middle_name = models.CharField(max_length=50, blank=True)
-    phone_number = models.CharField(max_length=20, unique=True)
-    address = models.CharField(max_length=255, blank=True)
+    middle_name = models.CharField(max_length=50, blank=True, null=True)
+    phone_number = PhoneNumberField(unique=True, region="RU")
 
     def __str__(self) -> str:
         return self.username
