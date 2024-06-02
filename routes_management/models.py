@@ -4,7 +4,22 @@ from django.urls import reverse
 
 
 class Route(models.Model):
+    MORNING = "morning"
+    AFTERNOON = "afternoon"
+    EVENING = "evening"
+
+    PART_OF_DAY_CHOICES = [
+        (MORNING, "Утро"),
+        (AFTERNOON, "День"),
+        (EVENING, "Вечер"),
+    ]
+
     date = models.DateField(blank=True, null=True)
+    part_of_day = models.CharField(
+        max_length=10,
+        choices=PART_OF_DAY_CHOICES,
+        default=MORNING,
+    )
     duration = models.TimeField()
     distance = models.FloatField()
     passengers_count = models.IntegerField(blank=True, null=True)

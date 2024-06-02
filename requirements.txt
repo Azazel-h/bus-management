@@ -5,3 +5,5 @@ secret-key-generator==0.0.8
 crispy-bootstrap5==2024.2
 django-crispy-forms==2.1
 psycopg2-binary==2.9.9
+django-phonenumber-field==7.3.0
+django-phonenumbers==1.0.1

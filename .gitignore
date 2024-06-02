@@ -243,3 +243,4 @@ fabric.properties
 .secret.txt
 db.*
 */migrations
+.DS_Store

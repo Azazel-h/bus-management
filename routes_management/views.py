@@ -69,7 +69,7 @@ class RouteGenerateView(LoginRequiredMixin, View):
             duration=str(datetime.timedelta(seconds=route_data["duration"]["value"])),
             driver=driver,
             passengers_count=unique_passenger_count,
-            price=(route_data["distance"]["value"] / 1000 * 100)
+            price=(route_data["distance"]["value"] / 1000 * 25)
             / unique_passenger_count,
             distance=route_data["distance"]["value"],
         )
@@ -187,15 +187,20 @@ class RouteTrackingView(LoginRequiredMixin, View):
 
     def post(self, request, pk):
         route = get_object_or_404(Route, id=pk)
+
         station_orders = StationOrder.objects.filter(route=route).order_by("order")
         formset = StationOrderFormSet(request.POST, queryset=station_orders)
 
         if formset.is_valid():
-            instances = formset.save(commit=False)
-            for instance in instances:
-                if instance.passed and instance.passed_time is None:
-                    instance.passed_time = timezone.now()
-                elif not instance.passed:
-                    instance.passed_time = None
-                instance.save()
+            for form in formset:
+                station_order = form.instance
+                form_data = form.cleaned_data
+                if form_data["passed"] and form_data["passed_time"] is None:
+                    station_order.passed_time = timezone.now()
+                elif not form_data["passed"]:
+                    station_order.passed_time = None
+
+                station_order.save(
+                    update_fields=["passed", "passed_time", "passengers_taken"]
+                )
         return redirect("route-tracking", pk=pk)

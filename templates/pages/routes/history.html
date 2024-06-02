@@ -18,6 +18,7 @@
                 <th scope="col">Примерная длительность</th>
                 <th scope="col">Стоимость</th>
                 <th scope="col">Водитель</th>
+                <th scope="col"></th>
             </tr>
             </thead>
             <tbody>
@@ -27,6 +28,10 @@
                 <td>{{ route.duration }} ч.</td>
                 <td>{{ route.price }}</td>
                 <td>{{ route.driver.last_name }} {{ route.driver.first_name }}</td>
+                <td>
+                    <a type="button" class="btn btn-success"
+                       href="{% url 'route-detail' pk=route.id %}">Подробнее</a>
+                </td>
             </tr>
             {% endfor %}
             </tbody>

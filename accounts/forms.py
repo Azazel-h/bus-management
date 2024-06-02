@@ -1,16 +1,25 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.forms import ModelForm
-
+from phonenumber_field.modelfields import PhoneNumberField
 from accounts.models import CustomUser
+from accounts.validators import validate_russian_alphabet
 
 
 class CustomUserCreateForm(UserCreationForm):
-    first_name = forms.CharField(max_length=50, label="Имя")
-    middle_name = forms.CharField(max_length=50, label="Отчество", required=False)
-    last_name = forms.CharField(max_length=50, label="Фамилия")
-    phone_number = forms.CharField(max_length=20, label="Номер телефона")
-    address = forms.CharField(max_length=255, label="Адрес")
+    first_name = forms.CharField(
+        max_length=50, label="Имя", validators=[validate_russian_alphabet]
+    )
+    middle_name = forms.CharField(
+        max_length=50,
+        label="Отчество",
+        required=False,
+        validators=[validate_russian_alphabet],
+    )
+    last_name = forms.CharField(
+        max_length=50, label="Фамилия", validators=[validate_russian_alphabet]
+    )
+    phone_number = PhoneNumberField(region="RU")
 
     class Meta:
         model = CustomUser
@@ -20,13 +29,27 @@ class CustomUserCreateForm(UserCreationForm):
             "first_name",
             "middle_name",
             "email",
-            "address",
             "phone_number",
-            "address",
         )
+        labels = {
+            "phone_number": "Номер телефона",
+        }
 
 
 class CustomUserAdminEditForm(UserChangeForm):
+    first_name = forms.CharField(
+        max_length=50, label="Имя", validators=[validate_russian_alphabet]
+    )
+    middle_name = forms.CharField(
+        max_length=50,
+        label="Отчество",
+        required=False,
+        validators=[validate_russian_alphabet],
+    )
+    last_name = forms.CharField(
+        max_length=50, label="Фамилия", validators=[validate_russian_alphabet]
+    )
+    phone_number = PhoneNumberField(region="RU")
 
     class Meta:
         model = CustomUser
@@ -36,25 +59,8 @@ class CustomUserAdminEditForm(UserChangeForm):
             "first_name",
             "middle_name",
             "email",
-            "address",
             "phone_number",
         )
-
-
-class UserUpdateForm(ModelForm):
-    first_name = forms.CharField(max_length=50, label="Имя")
-    middle_name = forms.CharField(max_length=50, label="Отчество")
-    last_name = forms.CharField(max_length=50, label="Фамилия")
-    phone_number = forms.CharField(max_length=20, label="Номер телефона")
-    address = forms.CharField(max_length=255, label="Адрес")
-
-    class Meta:
-        model = CustomUser
-        fields = (
-            "last_name",
-            "first_name",
-            "middle_name",
-            "email",
-            "address",
-            "phone_number",
-        )
+        labels = {
+            "phone_number": "Номер телефона",
+        }

@@ -21,7 +21,6 @@ class SignUpView(CreateView):
 
 class UserHistoryView(LoginRequiredMixin, ListView):
     model = Application
-    success_url = reverse_lazy("user-history")
     template_name = "pages/user/history.html"
     context_object_name = "applications"
 
